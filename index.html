@@ -3,130 +3,385 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>پلنر و داشبورد عملکرد</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Chart.js برای نمودارهای آماری -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>دفترچه برنامه‌ریزی و پلنر شخصی</title>
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1117;
+            --panel: #161b22;
+            --border: #30363d;
+            --accent: #58a6ff;
+            --success: #2ea043;
+            --text: #c9d1d9;
+            --text-white: #ffffff;
+            --muted: #8b949e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 25px 15px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Header & Top Bar */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            color: var(--text-white);
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Top Widgets (Timer & Stats) */
+        .top-widgets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .widget {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px 20px;
+        }
+
+        .widget h3 {
+            font-size: 0.95rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        /* Timer UI */
+        .timer-box {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .timer-display {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-white);
+            font-family: monospace;
+            background: #0004;
+            padding: 5px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: 0.2s;
+        }
+
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: #da3633; color: white; }
+        .btn-primary { background: var(--accent); color: #0d1117; }
+        .btn:hover { opacity: 0.85; }
+
+        /* Quick Input Form */
+        .add-task-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+        }
+
+        input, select, textarea {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-white);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        input:focus, select:focus { outline: 1px solid var(--accent); }
+
+        /* Main Planner Board */
+        .planner-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .column {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            min-height: 350px;
+        }
+
+        .column-header {
+            font-size: 1rem;
+            color: var(--text-white);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .task-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            position: relative;
+            transition: 0.2s;
+        }
+
+        .task-card.completed {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+
+        .task-title {
+            font-weight: bold;
+            color: var(--text-white);
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .task-meta {
+            font-size: 0.8rem;
+            color: var(--muted);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .task-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 3px 8px;
+            font-size: 0.75rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- هدر اصلی -->
-        <header>
-            <h1>پلنر و مدیریت زمان شخصی</h1>
-            <div class="actions">
-                <button id="open-timer-btn" class="btn primary-btn">⏱️ تایمر مطالعه</button>
-                <button id="open-modal-btn" class="btn success-btn">➕ ثبت برنامه / گزارش جدید</button>
-            </div>
-        </header>
 
-        <!-- بخش آمار و خلاصه کارکرد -->
-        <section class="stats-section">
-            <h2>📊 خلاصه عملکرد و آمار</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <h3>امروز</h3>
-                    <p id="stat-today">0 ساعت</p>
-                </div>
-                <div class="stat-card">
-                    <h3>این هفته</h3>
-                    <p id="stat-week">0 ساعت</p>
-                </div>
-                <div class="stat-card">
-                    <h3>این ماه</h3>
-                    <p id="stat-month">0 ساعت</p>
-                </div>
-                <div class="stat-card">
-                    <h3>مجموع کل</h3>
-                    <p id="stat-total">0 ساعت</p>
-                </div>
-            </div>
+    <header>
+        <h1>📖 دفترچه برنامه‌ریزی من</h1>
+        <span id="current-date" style="color: var(--muted); font-size: 0.9rem;"></span>
+    </header>
 
-            <!-- نمودار تفکیک زمان بر اساس درس/پروژه -->
-            <div class="chart-container">
-                <canvas id="subjectChart"></canvas>
-            </div>
-        </section>
-
-        <!-- بخش برنامه‌ها و اهداف -->
-        <section class="planner-section">
-            <h2>📅 برنامه‌ها و اهداف</h2>
-            <div class="planner-grid">
-                <div class="plan-column">
-                    <h3>📋 روزانه</h3>
-                    <div id="list-daily" class="task-list"></div>
-                </div>
-                <div class="plan-column">
-                    <h3>🎯 کوتاه‌مدت</h3>
-                    <div id="list-short" class="task-list"></div>
-                </div>
-                <div class="plan-column">
-                    <h3>🚀 میان‌مدت</h3>
-                    <div id="list-medium" class="task-list"></div>
-                </div>
-                <div class="plan-column">
-                    <h3>🏔️ بلندمدت</h3>
-                    <div id="list-long" class="task-list"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- بخش تاریخچه گزارش‌ها -->
-        <section class="logs-section">
-            <h2>📝 تاریخچه گزارش‌های زمانی</h2>
-            <div id="logs-container" class="logs-list"></div>
-        </section>
-    </div>
-
-    <!-- پنجره مدال ثبت برنامه / گزارش دستی -->
-    <div id="item-modal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" id="close-modal">&times;</span>
-            <h3 id="modal-title">ثبت برنامه یا گزارش جدید</h3>
-            <form id="planner-form">
-                <div class="form-group">
-                    <label>عنوان (درس / پروژه / کار):</label>
-                    <input type="text" id="form-title" placeholder="مثلاً: استاتیک یا برنامه نویسی" required>
-                </div>
-                <div class="form-group">
-                    <label>نوع زمان‌بندی:</label>
-                    <select id="form-type">
-                        <option value="daily">روزانه</option>
-                        <option value="short">کوتاه‌مدت</option>
-                        <option value="medium">میان‌مدت</option>
-                        <option value="long">بلندمدت</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>زمان صرف‌شده دستی (به دقیقه - اختیاری):</label>
-                    <input type="number" id="form-duration" placeholder="مثلاً: 90" min="0">
-                </div>
-                <div class="form-group">
-                    <label>توضیحات و گزارش کار:</label>
-                    <textarea id="form-desc" rows="3" placeholder="توضیحات یا مباحث مطالعه‌شده..."></textarea>
-                </div>
-                <button type="submit" class="btn primary-btn">ذخیره</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- پنجره مدال تایمر زنده -->
-    <div id="timer-modal" class="modal">
-        <div class="modal-content timer-content">
-            <span class="close-btn" id="close-timer">&times;</span>
+    <!-- ویجت‌های بالایی (تایمر و گزارش خلاصه) -->
+    <div class="top-widgets">
+        <div class="widget">
             <h3>⏱️ تایمر مطالعه و کار</h3>
-            <div class="form-group">
-                <label>عنوان درس / پروژه:</label>
-                <input type="text" id="timer-subject" placeholder="مثلاً: ریاضی عمومی">
+            <div class="timer-box">
+                <input type="text" id="timer-subject" placeholder="اسم درس/پروژه..." style="width: 120px;">
+                <div class="timer-display" id="timer-clock">00:00</div>
+                <button class="btn btn-success" id="start-btn" onclick="startTimer()">شروع</button>
+                <button class="btn btn-danger" id="stop-btn" onclick="stopTimer()" disabled>ثبت</button>
             </div>
-            <div class="timer-display" id="timer-display">00:00:00</div>
-            <div class="timer-controls">
-                <button id="start-timer" class="btn success-btn">شروع</button>
-                <button id="pause-timer" class="btn warning-btn" disabled>توقف</button>
-                <button id="stop-timer" class="btn danger-btn" disabled>پایان و ثبت</button>
+        </div>
+
+        <div class="widget">
+            <h3>📊 مجموع زمان ثبت‌شده</h3>
+            <div style="display: flex; justify-content: space-around; margin-top: 10px; text-align: center;">
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--muted);">امروز</div>
+                    <div id="stat-today" style="font-size: 1.2rem; font-weight: bold; color: var(--accent);">0 دقیقه</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--muted);">این هفته</div>
+                    <div id="stat-week" style="font-size: 1.2rem; font-weight: bold; color: var(--accent);">0 ساعت</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- فرم افزودن برنامه جدید -->
+    <div class="add-task-card">
+        <h3 style="color: var(--text-white); margin-bottom: 12px; font-size: 1rem;">➕ افزودن برنامه / کار جدید</h3>
+        <form id="task-form" onsubmit="addTask(event)">
+            <div class="form-row">
+                <input type="text" id="task-title" placeholder="عنوان (مثلاً: حل ۱۰ مسئله استاتیک)" required>
+                <select id="task-type">
+                    <option value="daily">📅 روزانه</option>
+                    <option value="short">🎯 کوتاه‌مدت</option>
+                    <option value="medium">🚀 میان‌مدت</option>
+                    <option value="long">🏔️ بلندمدت</option>
+                </select>
+                <input type="number" id="task-time" placeholder="زمان (دقیقه - اختیاری)">
+                <button type="submit" class="btn btn-primary">افزودن به پلنر</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- بورد اصلی پلنر -->
+    <div class="planner-board">
+        <div class="column">
+            <div class="column-header">📅 برنامه روزانه</div>
+            <div id="list-daily"></div>
+        </div>
+        <div class="column">
+            <div class="column-header">🎯 کوتاه‌مدت</div>
+            <div id="list-short"></div>
+        </div>
+        <div class="column">
+            <div class="column-header">🚀 میان‌مدت</div>
+            <div id="list-medium"></div>
+        </div>
+        <div class="column">
+            <div class="column-header">🏔️ بلندمدت</div>
+            <div id="list-long"></div>
+        </div>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('my_planner_tasks')) || [];
+        let logs = JSON.parse(localStorage.getItem('my_planner_logs')) || [];
+        let timerInterval = null;
+        let timerSeconds = 0;
+
+        // نمایش تاریخ
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('fa-IR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        function saveAndRender() {
+            localStorage.setItem('my_planner_tasks', JSON.stringify(tasks));
+            localStorage.setItem('my_planner_logs', JSON.stringify(logs));
+            renderTasks();
+            renderStats();
+        }
+
+        function addTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value;
+            const type = document.getElementById('task-type').value;
+            const time = parseInt(document.getElementById('task-time').value) || 0;
+
+            tasks.push({ id: Date.now(), title, type, completed: false });
+
+            if(time > 0) {
+                logs.push({ subject: title, minutes: time, date: new Date().toISOString() });
+            }
+
+            document.getElementById('task-form').reset();
+            saveAndRender();
+        }
+
+        function toggleTask(id) {
+            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
+            saveAndRender();
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveAndRender();
+        }
+
+        function renderTasks() {
+            ['daily', 'short', 'medium', 'long'].forEach(type => {
+                const list = document.getElementById(`list-${type}`);
+                list.innerHTML = '';
+                tasks.filter(t => t.type === type).forEach(t => {
+                    list.innerHTML += `
+                        <div class="task-card ${t.completed ? 'completed' : ''}">
+                            <div class="task-title">${t.title}</div>
+                            <div class="task-actions">
+                                <button class="btn btn-sm ${t.completed ? 'btn-primary' : 'btn-success'}" onclick="toggleTask(${t.id})">
+                                    ${t.completed ? 'بازگردانی' : '✓ انجام شد'}
+                                </button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+        }
+
+        // Timer Logic
+        function startTimer() {
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('stop-btn').disabled = false;
+            timerInterval = setInterval(() => {
+                timerSeconds++;
+                let m = String(Math.floor(timerSeconds / 60)).padStart(2, '0');
+                let s = String(timerSeconds % 60).padStart(2, '0');
+                document.getElementById('timer-clock').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            const subject = document.getElementById('timer-subject').value || 'مطالعه عمومی';
+            const mins = Math.round(timerSeconds / 60);
+
+            if(mins > 0) {
+                logs.push({ subject, minutes: mins, date: new Date().toISOString() });
+            }
+
+            timerSeconds = 0;
+            document.getElementById('timer-clock').innerText = "00:00";
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('stop-btn').disabled = true;
+            document.getElementById('timer-subject').value = '';
+            saveAndRender();
+        }
+
+        function renderStats() {
+            let todayMins = 0;
+            let weekMins = 0;
+            const now = new Date();
+
+            logs.forEach(l => {
+                const logDate = new Date(l.date);
+                const diffDays = (now - logDate) / (1000 * 60 * 60 * 24);
+
+                if (diffDays < 1 && logDate.getDate() === now.getDate()) todayMins += l.minutes;
+                if (diffDays <= 7) weekMins += l.minutes;
+            });
+
+            document.getElementById('stat-today').innerText = `${todayMins} دقیقه`;
+            document.getElementById('stat-week').innerText = `${(weekMins / 60).toFixed(1)} ساعت`;
+        }
+
+        // Init
+        saveAndRender();
+    </script>
 </body>
-</html>
+</html>/html>

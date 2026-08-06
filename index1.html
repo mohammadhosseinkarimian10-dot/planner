@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پلنر و داشبورد عملکرد</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js برای نمودارهای آماری -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- هدر اصلی -->
+        <header>
+            <h1>پلنر و مدیریت زمان شخصی</h1>
+            <div class="actions">
+                <button id="open-timer-btn" class="btn primary-btn">⏱️ تایمر مطالعه</button>
+                <button id="open-modal-btn" class="btn success-btn">➕ ثبت برنامه / گزارش جدید</button>
+            </div>
+        </header>
+
+        <!-- بخش آمار و خلاصه کارکرد -->
+        <section class="stats-section">
+            <h2>📊 خلاصه عملکرد و آمار</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>امروز</h3>
+                    <p id="stat-today">0 ساعت</p>
+                </div>
+                <div class="stat-card">
+                    <h3>این هفته</h3>
+                    <p id="stat-week">0 ساعت</p>
+                </div>
+                <div class="stat-card">
+                    <h3>این ماه</h3>
+                    <p id="stat-month">0 ساعت</p>
+                </div>
+                <div class="stat-card">
+                    <h3>مجموع کل</h3>
+                    <p id="stat-total">0 ساعت</p>
+                </div>
+            </div>
+
+            <!-- نمودار تفکیک زمان بر اساس درس/پروژه -->
+            <div class="chart-container">
+                <canvas id="subjectChart"></canvas>
+            </div>
+        </section>
+
+        <!-- بخش برنامه‌ها و اهداف -->
+        <section class="planner-section">
+            <h2>📅 برنامه‌ها و اهداف</h2>
+            <div class="planner-grid">
+                <div class="plan-column">
+                    <h3>📋 روزانه</h3>
+                    <div id="list-daily" class="task-list"></div>
+                </div>
+                <div class="plan-column">
+                    <h3>🎯 کوتاه‌مدت</h3>
+                    <div id="list-short" class="task-list"></div>
+                </div>
+                <div class="plan-column">
+                    <h3>🚀 میان‌مدت</h3>
+                    <div id="list-medium" class="task-list"></div>
+                </div>
+                <div class="plan-column">
+                    <h3>🏔️ بلندمدت</h3>
+                    <div id="list-long" class="task-list"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- بخش تاریخچه گزارش‌ها -->
+        <section class="logs-section">
+            <h2>📝 تاریخچه گزارش‌های زمانی</h2>
+            <div id="logs-container" class="logs-list"></div>
+        </section>
+    </div>
+
+    <!-- پنجره مدال ثبت برنامه / گزارش دستی -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="close-modal">&times;</span>
+            <h3 id="modal-title">ثبت برنامه یا گزارش جدید</h3>
+            <form id="planner-form">
+                <div class="form-group">
+                    <label>عنوان (درس / پروژه / کار):</label>
+                    <input type="text" id="form-title" placeholder="مثلاً: استاتیک یا برنامه نویسی" required>
+                </div>
+                <div class="form-group">
+                    <label>نوع زمان‌بندی:</label>
+                    <select id="form-type">
+                        <option value="daily">روزانه</option>
+                        <option value="short">کوتاه‌مدت</option>
+                        <option value="medium">میان‌مدت</option>
+                        <option value="long">بلندمدت</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>زمان صرف‌شده دستی (به دقیقه - اختیاری):</label>
+                    <input type="number" id="form-duration" placeholder="مثلاً: 90" min="0">
+                </div>
+                <div class="form-group">
+                    <label>توضیحات و گزارش کار:</label>
+                    <textarea id="form-desc" rows="3" placeholder="توضیحات یا مباحث مطالعه‌شده..."></textarea>
+                </div>
+                <button type="submit" class="btn primary-btn">ذخیره</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- پنجره مدال تایمر زنده -->
+    <div id="timer-modal" class="modal">
+        <div class="modal-content timer-content">
+            <span class="close-btn" id="close-timer">&times;</span>
+            <h3>⏱️ تایمر مطالعه و کار</h3>
+            <div class="form-group">
+                <label>عنوان درس / پروژه:</label>
+                <input type="text" id="timer-subject" placeholder="مثلاً: ریاضی عمومی">
+            </div>
+            <div class="timer-display" id="timer-display">00:00:00</div>
+            <div class="timer-controls">
+                <button id="start-timer" class="btn success-btn">شروع</button>
+                <button id="pause-timer" class="btn warning-btn" disabled>توقف</button>
+                <button id="stop-timer" class="btn danger-btn" disabled>پایان و ثبت</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

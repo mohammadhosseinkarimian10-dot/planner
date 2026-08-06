@@ -3,375 +3,450 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>پلنر و داشبورد شخصی</title>
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>سیستم مدیریت شخصی پرو</title>
+    
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-body: #0f172a;
-            --bg-panel: #1e293b;
-            --bg-hover: #334155;
-            --border: #334155;
-            --primary: #38bdf8;
-            --secondary: #818cf8;
-            --success: #10b981;
-            --danger: #f43f5e;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --radius: 12px;
-            --nav-width: 250px;
+            --bg-body: #0f172a; --bg-panel: #1e293b; --bg-hover: #334155;
+            --border: #334155; --primary: #8b5cf6; --secondary: #3b82f6;
+            --success: #10b981; --warning: #f59e0b; --danger: #f43f5e;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --radius: 12px; --nav-width: 260px;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; transition: 0.2s; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Vazirmatn', sans-serif; }
         body { background-color: var(--bg-body); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
-
-        /* Navigation (Sidebar Desktop / Bottom Bar Mobile) */
-        .sidebar {
-            width: var(--nav-width);
-            background: var(--bg-panel);
-            border-left: 1px solid var(--border);
-            padding: 20px 0;
-            display: flex;
-            flex-direction: column;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-        }
-
-        .brand { text-align: center; font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 30px; padding: 0 20px; }
-
-        .nav-item {
-            padding: 15px 20px;
-            color: var(--text-muted);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-            border-right: 3px solid transparent;
-        }
-
+        
+        /* Navigation */
+        .sidebar { width: var(--nav-width); background: rgba(30,41,59,0.95); backdrop-filter: blur(10px); border-left: 1px solid var(--border); padding: 20px 0; display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 100; }
+        .brand { text-align: center; font-size: 1.4rem; font-weight: bold; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        .nav-item { padding: 15px 20px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 10px; border-right: 3px solid transparent; transition: 0.2s; }
         .nav-item:hover { background: var(--bg-hover); color: var(--text-main); }
-        .nav-item.active { background: rgba(56, 189, 248, 0.1); color: var(--primary); border-right-color: var(--primary); }
-
-        /* Main Content Area */
-        .main-content {
-            flex: 1;
-            margin-right: var(--nav-width);
-            padding: 30px;
-            padding-bottom: 100px; /* For mobile nav spacing */
-            width: 100%;
-        }
-
-        .view-section { display: none; animation: fadeIn 0.3s ease; }
+        .nav-item.active { background: rgba(139, 92, 246, 0.1); color: var(--primary); border-right-color: var(--primary); }
+        
+        /* Main Content */
+        .main-content { flex: 1; margin-right: var(--nav-width); padding: 30px; padding-bottom: 100px; width: 100%; }
+        .view-section { display: none; animation: fadeIn 0.3s; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Cards & Forms */
+        
+        /* UI Elements */
         .card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-        .card-header { font-size: 1.2rem; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .card-header { font-size: 1.2rem; color: var(--text-main); margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { font-size: 0.85rem; color: var(--text-muted); }
-        input, select { background: var(--bg-body); border: 1px solid var(--border); color: var(--text-main); padding: 10px 12px; border-radius: 8px; outline: none; }
-        input:focus, select:focus { border-color: var(--primary); }
+        input, select, textarea { width: 100%; background: var(--bg-body); border: 1px solid var(--border); color: var(--text-main); padding: 10px 12px; border-radius: 8px; outline: none; margin-bottom: 10px; }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
         
-        .btn { padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
-        .btn-primary { background: var(--primary); color: #000; }
+        .btn { padding: 10px 15px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-primary { background: var(--primary); color: #fff; }
         .btn-success { background: var(--success); color: #fff; }
         .btn-danger { background: var(--danger); color: #fff; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { background: var(--bg-hover); }
         .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
-        .btn:hover { filter: brightness(1.1); }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
-        /* Task & Goal Items */
-        .list-item {
-            background: var(--bg-body); border: 1px solid var(--border); border-radius: 8px; padding: 15px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .list-item.completed { opacity: 0.6; border-color: var(--success); }
-        .list-item.completed .item-title { text-decoration: line-through; }
-        .item-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; display: flex; gap: 15px; }
-        .progress-bar-bg { width: 100%; height: 6px; background: var(--bg-panel); border-radius: 4px; margin-top: 8px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; }
+        /* Kanban Board */
+        .kanban-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: start; }
+        .kanban-col { background: rgba(30,41,59,0.5); border: 1px dashed var(--border); border-radius: var(--radius); padding: 15px; min-height: 400px; display: flex; flex-direction: column; gap: 15px; }
+        .col-title { text-align: center; font-weight: bold; color: var(--text-muted); margin-bottom: 10px; }
         
-        /* Charts Grid */
-        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .chart-container { position: relative; height: 300px; width: 100%; }
+        .task-card { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 15px; cursor: grab; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .task-card:active { cursor: grabbing; opacity: 0.8; }
+        .task-card.dragging { opacity: 0.5; }
+        .task-title { font-weight: bold; margin-bottom: 5px; font-size: 1.05rem; }
+        .task-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+        .tag { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; }
+        .task-link { color: var(--secondary); font-size: 0.8rem; text-decoration: none; display: block; margin-bottom: 10px; }
+        .task-link:hover { text-decoration: underline; }
+        .task-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal { background: var(--bg-panel); width: 90%; max-width: 500px; border-radius: var(--radius); padding: 25px; border: 1px solid var(--border); }
+        
+        /* Floating Timer (Zen Mode style) */
+        .active-timer { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(15,23,42,0.95); border: 1px solid var(--primary); border-radius: 30px; padding: 15px 30px; display: none; align-items: center; gap: 20px; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); z-index: 1100; transition: all 0.3s; }
+        .active-timer.pomodoro { border-color: var(--warning); box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3); }
+        .timer-time { font-family: monospace; font-size: 2rem; font-weight: bold; color: var(--text-main); }
+        
+        /* Templates Grid */
+        .template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
+        .template-card { background: var(--bg-body); border: 1px solid var(--border); padding: 15px; border-radius: 8px; cursor: pointer; text-align: center; }
+        .template-card:hover { border-color: var(--primary); background: rgba(139, 92, 246, 0.1); }
 
-        /* History Table */
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th, td { padding: 12px; border-bottom: 1px solid var(--border); }
-        th { color: var(--text-muted); font-size: 0.9rem; }
-
-        /* Floating Timer */
-        .active-timer {
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
-            background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px);
-            border: 1px solid var(--primary); border-radius: 30px; padding: 10px 25px;
-            display: none; align-items: center; gap: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.5); z-index: 1000;
-        }
-        .timer-time { font-family: monospace; font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-
-        /* Responsive Mobile Layout */
+        /* Responsive */
         @media (max-width: 768px) {
-            .sidebar {
-                flex-direction: row; width: 100%; height: 70px; border-left: none; border-top: 1px solid var(--border);
-                bottom: 0; left: 0; padding: 0; justify-content: space-around; align-items: center; background: #1e293bf5; backdrop-filter: blur(10px);
-            }
+            .kanban-board { grid-template-columns: 1fr; }
+            .sidebar { flex-direction: row; width: 100%; height: 70px; border-left: none; border-top: 1px solid var(--border); bottom: 0; left: 0; padding: 0; justify-content: space-around; }
             .brand { display: none; }
-            .nav-item { flex-direction: column; gap: 5px; font-size: 0.75rem; padding: 10px; border-right: none; border-top: 3px solid transparent; width: 25%; text-align: center; }
+            .nav-item { flex-direction: column; gap: 4px; font-size: 0.7rem; padding: 10px; border-right: none; border-top: 3px solid transparent; width: 25%; text-align: center; }
             .nav-item.active { border-right: none; border-top-color: var(--primary); background: transparent; }
             .main-content { margin-right: 0; padding: 15px; padding-bottom: 90px; }
-            .active-timer { top: 10px; width: 90%; justify-content: space-between; }
+            .active-timer { top: 10px; width: 95%; flex-wrap: wrap; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
     <nav class="sidebar">
-        <div class="brand">مدیریت شخصی</div>
-        <div class="nav-item active" onclick="switchView('view-planner', this)">📅 برنامه‌ریزی</div>
-        <div class="nav-item" onclick="switchView('view-goals', this)">🎯 اهداف</div>
-        <div class="nav-item" onclick="switchView('view-stats', this)">📊 داشبورد آمار</div>
-        <div class="nav-item" onclick="switchView('view-history', this)">🕒 تاریخچه</div>
+        <div class="brand">مدیریت شخصی پرو</div>
+        <div class="nav-item active" onclick="switchView('view-kanban', this)">📋 کانبان</div>
+        <div class="nav-item" onclick="switchView('view-templates', this)">⚡ قالب‌ها</div>
+        <div class="nav-item" onclick="switchView('view-stats', this)">📊 داشبورد</div>
+        <div class="nav-item" onclick="switchView('view-settings', this)">⚙️ تنظیمات</div>
     </nav>
 
-    <!-- Main Content -->
     <main class="main-content">
         
-        <!-- Planner View -->
-        <section id="view-planner" class="view-section active">
-            <div class="card">
-                <div class="card-header">
-                    <span>ایجاد برنامه اجرایی</span>
-                    <input type="date" id="date-picker" onchange="renderPlanner()">
-                </div>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>عنوان کار (مثلاً استاتیک، متلب، C++):</label>
-                        <input type="text" id="task-title" placeholder="چه کاری باید انجام شود؟" required>
-                    </div>
-                    <div class="input-group">
-                        <label>دسته‌بندی:</label>
-                        <select id="task-cat">
-                            <option value="دانشگاه">دانشگاه و درس</option>
-                            <option value="برنامه‌نویسی">برنامه‌نویسی و نرم‌افزار</option>
-                            <option value="پروژه">پروژه شخصی / مالی</option>
-                            <option value="متفرقه">متفرقه</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>زمان هدف (دقیقه):</label>
-                        <input type="number" id="task-target" placeholder="120" value="60" required>
-                    </div>
-                    <div class="input-group" style="justify-content: flex-end;">
-                        <button class="btn btn-primary" onclick="addTask()">➕ ثبت برای این تاریخ</button>
-                    </div>
+        <!-- KANBAN VIEW -->
+        <section id="view-kanban" class="view-section active">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <input type="date" id="kanban-date" onchange="renderKanban()" style="width: auto; margin: 0;">
+                <div>
+                    <button class="btn btn-outline" onclick="openReflectionModal()">📝 ارزیابی امروز</button>
+                    <button class="btn btn-primary" onclick="openTaskModal()">➕ کار جدید</button>
                 </div>
             </div>
-            
-            <div class="card">
-                <div class="card-header">لیست کارهای تاریخ انتخاب شده</div>
-                <div id="tasks-container"></div>
+
+            <div class="kanban-board">
+                <div class="kanban-col" id="col-todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="col-title">📌 برای انجام (To Do)</div>
+                </div>
+                <div class="kanban-col" id="col-doing" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="col-title">⏳ در حال انجام (Doing)</div>
+                </div>
+                <div class="kanban-col" id="col-done" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="col-title">✅ تکمیل شده (Done)</div>
+                </div>
             </div>
         </section>
 
-        <!-- Goals View -->
-        <section id="view-goals" class="view-section">
+        <!-- TEMPLATES VIEW -->
+        <section id="view-templates" class="view-section">
             <div class="card">
-                <div class="card-header">ثبت هدف جدید</div>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <input type="text" id="goal-title" placeholder="عنوان هدف (مثلاً تسلط به سالیدورک)" required>
-                    </div>
-                    <div class="input-group">
-                        <select id="goal-type">
-                            <option value="short">کوتاه‌مدت (۱ تا ۳ ماه)</option>
-                            <option value="medium">میان‌مدت (۳ تا ۶ ماه)</option>
-                            <option value="long">بلندمدت (بیش از ۶ ماه)</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" onclick="addGoal()">➕ ثبت هدف</button>
+                <div class="card-header">قالب‌های آماده (افزودن سریع به امروز)</div>
+                <div class="template-grid" id="template-container">
+                    <!-- Templates render here -->
                 </div>
-            </div>
-            
-            <div class="charts-grid">
-                <div class="card"><div class="card-header">کوتاه‌مدت</div><div id="goals-short"></div></div>
-                <div class="card"><div class="card-header">میان‌مدت</div><div id="goals-medium"></div></div>
-                <div class="card"><div class="card-header">بلندمدت</div><div id="goals-long"></div></div>
             </div>
         </section>
 
-        <!-- Analytics View -->
+        <!-- STATS & HISTORY VIEW -->
         <section id="view-stats" class="view-section">
-            <div class="charts-grid">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="card">
-                    <div class="card-header">توزیع زمان بر اساس دسته‌بندی (کل تاریخچه)</div>
-                    <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+                    <div class="card-header">توزیع زمان (کل تاریخچه)</div>
+                    <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
                 <div class="card">
-                    <div class="card-header">عملکرد ۷ روز گذشته (دقیقه)</div>
-                    <div class="chart-container"><canvas id="weeklyChart"></canvas></div>
+                    <div class="card-header">عملکرد ۷ روز گذشته</div>
+                    <div style="height: 300px;"><canvas id="weeklyChart"></canvas></div>
                 </div>
+            </div>
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-header">یادداشت‌های ارزیابی روزانه</div>
+                <div id="reflections-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
             </div>
         </section>
 
-        <!-- History View -->
-        <section id="view-history" class="view-section">
+        <!-- SETTINGS / BACKUP VIEW -->
+        <section id="view-settings" class="view-section">
             <div class="card">
-                <div class="card-header">تاریخچه کامل کارهای انجام شده</div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>تاریخ و زمان</th>
-                                <th>عنوان کار</th>
-                                <th>دسته‌بندی</th>
-                                <th>مدت ثبت شده</th>
-                                <th>عملیات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="history-table-body"></tbody>
-                    </table>
+                <div class="card-header">پشتیبان‌گیری و انتقال اطلاعات (Export/Import)</div>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">از آنجا که اطلاعات در مرورگر شما ذخیره می‌شود، حتماً هر چند وقت یکبار فایل بک‌آپ دانلود کنید.</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="exportData()">💾 دانلود فایل بک‌آپ (.json)</button>
+                    <label class="btn btn-outline" style="cursor: pointer;">
+                        📂 بازگردانی اطلاعات از فایل
+                        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importData(event)">
+                    </label>
                 </div>
             </div>
+            <div class="card" style="border-color: var(--danger);">
+                <div class="card-header" style="color: var(--danger);">منطقه خطر</div>
+                <button class="btn btn-danger" onclick="clearAllData()">🗑️ پاک کردن کل اطلاعات پلنر</button>
+            </div>
         </section>
-
     </main>
 
-    <!-- Floating Timer -->
+    <!-- FLOATING TIMER -->
     <div class="active-timer" id="floating-timer">
         <div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);" id="active-task-title">در حال انجام...</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);" id="active-task-title">در حال انجام...</div>
             <div class="timer-time" id="timer-display">00:00</div>
         </div>
-        <button class="btn btn-danger" onclick="stopActiveTimer()">پایان و ثبت زمان</button>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn btn-outline" id="pomodoro-toggle" onclick="togglePomodoro()">🍅 پومودورو</button>
+            <button class="btn btn-danger" onclick="stopTimer()">⏹ پایان و ثبت</button>
+        </div>
+    </div>
+
+    <!-- ADD TASK MODAL -->
+    <div class="modal-overlay" id="modal-task">
+        <div class="modal">
+            <h3 style="margin-bottom: 20px;">➕ ایجاد کار جدید</h3>
+            <input type="text" id="t-title" placeholder="عنوان کار..." required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <select id="t-category">
+                    <option value="دانشگاه">دانشگاه و درس</option>
+                    <option value="برنامه‌نویسی">برنامه‌نویسی / نرم‌افزار</option>
+                    <option value="پروژه">پروژه شخصی / مالی</option>
+                    <option value="متفرقه">متفرقه</option>
+                </select>
+                <input type="number" id="t-target" placeholder="هدف زمانی (دقیقه)" value="60">
+            </div>
+            <input type="text" id="t-tags" placeholder="هشتگ‌ها (با کاما جدا کنید) مثلاً: استاتیک, تمرین">
+            <input type="url" id="t-link" placeholder="لینک ضمیمه (اختیاری) https://...">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-outline" onclick="closeModal('modal-task')">انصراف</button>
+                <button class="btn btn-primary" onclick="saveTask()">ذخیره تسک</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DAILY REFLECTION MODAL -->
+    <div class="modal-overlay" id="modal-reflection">
+        <div class="modal">
+            <h3 style="margin-bottom: 20px;">📝 ارزیابی پایان روز</h3>
+            <textarea id="r-text" rows="4" placeholder="امروز چطور گذشت؟ چه چیزی باعث حواس‌پرتی شد؟ فردا چه کار متفاوتی می‌کنی؟"></textarea>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-outline" onclick="closeModal('modal-reflection')">انصراف</button>
+                <button class="btn btn-primary" onclick="saveReflection()">ثبت ارزیابی</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        // --- Data Structure Initialization ---
-        let tasks = JSON.parse(localStorage.getItem('mega_tasks')) || [];
-        let goals = JSON.parse(localStorage.getItem('mega_goals')) || [];
-        let logs = JSON.parse(localStorage.getItem('mega_logs')) || [];
+        // --- 1. DATA INITIALIZATION ---
+        let tasks = JSON.parse(localStorage.getItem('pro_tasks')) || [];
+        let logs = JSON.parse(localStorage.getItem('pro_logs')) || [];
+        let reflections = JSON.parse(localStorage.getItem('pro_reflections')) || [];
+        
+        // Personalized Default Templates
+        const defaultTemplates = [
+            { title: "حل تمرین استاتیک", tags: "دانشگاه, استاتیک", targetMins: 90, category: "دانشگاه" },
+            { title: "طراحی سالیدورک (SolidWorks)", tags: "پروژه, سالیدورک", targetMins: 120, category: "برنامه‌نویسی" },
+            { title: "کدنویسی C++ / متلب", tags: "کدنویسی, متلب", targetMins: 60, category: "برنامه‌نویسی" },
+            { title: "بررسی پورتفوی نوبیتکس", tags: "کریپتو, مالی", targetMins: 15, category: "پروژه" }
+        ];
 
-        // Set today's date in planner
-        const datePicker = document.getElementById('date-picker');
-        datePicker.value = new Date().toISOString().split('T')[0];
+        document.getElementById('kanban-date').value = new Date().toISOString().split('T')[0];
 
-        // --- Navigation Logic ---
-        function switchView(viewId, element) {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        // --- 2. NAVIGATION & MODALS ---
+        function switchView(viewId, el) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
-            element.classList.add('active');
-
-            if (viewId === 'view-planner') renderPlanner();
-            if (viewId === 'view-goals') renderGoals();
-            if (viewId === 'view-stats') renderCharts();
-            if (viewId === 'view-history') renderHistory();
+            el.classList.add('active');
+            if (viewId === 'view-kanban') renderKanban();
+            if (viewId === 'view-templates') renderTemplates();
+            if (viewId === 'view-stats') renderStats();
         }
 
-        // --- Planner Logic ---
-        function addTask() {
-            const title = document.getElementById('task-title').value;
-            const category = document.getElementById('task-cat').value;
-            const target = parseInt(document.getElementById('task-target').value);
-            const date = datePicker.value;
+        function openTaskModal() { document.getElementById('modal-task').style.display = 'flex'; }
+        function openReflectionModal() { document.getElementById('modal-reflection').style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-            if(!title) return;
-
-            tasks.push({ id: Date.now(), title, category, date, targetMins: target, actualMins: 0, completed: false });
-            saveData();
-            document.getElementById('task-title').value = '';
-            renderPlanner();
-        }
-
-        function renderPlanner() {
-            const container = document.getElementById('tasks-container');
-            container.innerHTML = '';
-            const selectedDate = datePicker.value;
+        // --- 3. KANBAN BOARD & DRAG/DROP ---
+        function renderKanban() {
+            const date = document.getElementById('kanban-date').value;
+            const cols = { 'todo': document.getElementById('col-todo'), 'doing': document.getElementById('col-doing'), 'done': document.getElementById('col-done') };
             
-            const dayTasks = tasks.filter(t => t.date === selectedDate);
-            if(dayTasks.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-muted); text-align: center;">برنامه‌ای برای این تاریخ ثبت نشده.</p>';
-                return;
+            // Reset columns (keep titles)
+            cols.todo.innerHTML = '<div class="col-title">📌 برای انجام (To Do)</div>';
+            cols.doing.innerHTML = '<div class="col-title">⏳ در حال انجام (Doing)</div>';
+            cols.done.innerHTML = '<div class="col-title">✅ تکمیل شده (Done)</div>';
+
+            const dayTasks = tasks.filter(t => t.date === date);
+            dayTasks.forEach(t => {
+                let status = t.status || 'todo';
+                let tagsHTML = t.tags ? t.tags.split(',').map(tag => `<span class="tag">#${tag.trim()}</span>`).join('') : '';
+                let linkHTML = t.link ? `<a href="${t.link}" target="_blank" class="task-link">🔗 منبع / لینک</a>` : '';
+                let percent = Math.min((t.actualMins / t.targetMins) * 100, 100) || 0;
+
+                const cardHTML = `
+                    <div class="task-card" draggable="true" id="task-${t.id}" ondragstart="drag(event)">
+                        <div class="task-title">${t.title}</div>
+                        ${tagsHTML ? `<div class="task-tags">${tagsHTML}</div>` : ''}
+                        ${linkHTML}
+                        <div class="task-meta">
+                            <span>هدف: ${t.targetMins} د</span>
+                            <span style="color: var(--primary)">انجام: ${t.actualMins} د</span>
+                        </div>
+                        <div style="width: 100%; height: 4px; background: var(--bg-body); border-radius: 2px; margin-bottom: 10px;">
+                            <div style="width: ${percent}%; height: 100%; background: ${percent>=100?'var(--success)':'var(--primary)'};"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            ${status !== 'done' ? `<button class="btn btn-sm btn-outline" onclick="startTimer(${t.id}, '${t.title}')">▶ تایمر</button>` : '<span></span>'}
+                            <button class="btn btn-sm btn-danger" onclick="deleteTask(${t.id})">✖</button>
+                        </div>
+                    </div>
+                `;
+                if(cols[status]) cols[status].innerHTML += cardHTML;
+            });
+        }
+
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); ev.target.classList.add('dragging'); }
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const element = document.getElementById(data);
+            element.classList.remove('dragging');
+            
+            let dropZone = ev.target.closest('.kanban-col');
+            if (dropZone) {
+                dropZone.appendChild(element);
+                // Update status in data
+                let taskId = parseInt(data.replace('task-', ''));
+                let newStatus = dropZone.id.replace('col-', '');
+                tasks = tasks.map(t => t.id === taskId ? {...t, status: newStatus} : t);
+                saveData();
+            }
+        }
+
+        // --- 4. TASK MANAGEMENT ---
+        function saveTask(template = null) {
+            let title, cat, target, tags, link;
+            if (template) {
+                title = template.title; cat = template.category; target = template.targetMins; tags = template.tags; link = '';
+            } else {
+                title = document.getElementById('t-title').value;
+                cat = document.getElementById('t-category').value;
+                target = parseInt(document.getElementById('t-target').value) || 60;
+                tags = document.getElementById('t-tags').value;
+                link = document.getElementById('t-link').value;
+                if(!title) return;
             }
 
-            dayTasks.forEach(task => {
-                let percent = Math.min((task.actualMins / task.targetMins) * 100, 100) || 0;
+            const date = document.getElementById('kanban-date').value;
+            tasks.push({ id: Date.now(), title, category: cat, targetMins: target, actualMins: 0, status: 'todo', date, tags, link });
+            saveData();
+            closeModal('modal-task');
+            document.getElementById('t-title').value = ''; document.getElementById('t-tags').value = ''; document.getElementById('t-link').value = '';
+            
+            // Switch to Kanban if not already there
+            document.querySelector('.nav-item').click(); 
+            renderKanban();
+        }
+
+        function deleteTask(id) { tasks = tasks.filter(t => t.id !== id); saveData(); renderKanban(); }
+        
+        function renderTemplates() {
+            const container = document.getElementById('template-container');
+            container.innerHTML = '';
+            defaultTemplates.forEach((tpl, index) => {
                 container.innerHTML += `
-                    <div class="list-item ${task.completed ? 'completed' : ''}">
-                        <div style="flex: 1;">
-                            <strong class="item-title">${task.title}</strong>
-                            <div class="item-meta">
-                                <span>${task.category}</span> | 
-                                <span>هدف: ${task.targetMins} د</span> | 
-                                <span>انجام شده: <b style="color:var(--primary)">${task.actualMins} د</b></span>
-                            </div>
-                            <div class="progress-bar-bg">
-                                <div class="progress-bar-fill" style="width: ${percent}%; background: ${percent>=100 ? 'var(--success)' : 'var(--primary)'};"></div>
-                            </div>
-                        </div>
-                        <div style="display: flex; gap: 8px; align-items: center; margin-right: 15px;">
-                            ${!task.completed ? `<button class="btn btn-sm btn-primary" onclick="startTimer(${task.id}, '${task.title}')">▶ شروع</button>` : ''}
-                            <button class="btn btn-sm ${task.completed ? 'btn-primary' : 'btn-success'}" onclick="toggleTaskComplete(${task.id})">✔</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteTask(${task.id})">✖</button>
-                        </div>
+                    <div class="template-card" onclick='saveTask(${JSON.stringify(tpl)})'>
+                        <h4 style="margin-bottom: 10px;">${tpl.title}</h4>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">${tpl.targetMins} دقیقه | ${tpl.category}</div>
                     </div>
                 `;
             });
         }
 
-        function toggleTaskComplete(id) {
-            tasks = tasks.map(t => t.id === id ? {...t, completed: !t.completed} : t);
-            saveData(); renderPlanner();
-        }
-        function deleteTask(id) {
-            tasks = tasks.filter(t => t.id !== id);
-            saveData(); renderPlanner();
-        }
-
-        // --- Active Timer Logic ---
+        // --- 5. TIMER & POMODORO LOGIC ---
         let timerInterval = null;
         let activeSeconds = 0;
         let activeTaskId = null;
+        let isPomodoro = false;
+        let pomodoroTarget = 25 * 60; // 25 mins in seconds
+
+        function playBeep() {
+            // Web Audio API beep (No external file needed)
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = 'sine'; osc.frequency.value = 523.25; // C5
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(1, ctx.currentTime + 0.05);
+            gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.5);
+            osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.5);
+        }
+
+        function togglePomodoro() {
+            isPomodoro = !isPomodoro;
+            const timerBox = document.getElementById('floating-timer');
+            const btn = document.getElementById('pomodoro-toggle');
+            if (isPomodoro) {
+                timerBox.classList.add('pomodoro');
+                btn.classList.replace('btn-outline', 'btn-warning');
+                activeSeconds = pomodoroTarget; // Reset to 25 mins
+            } else {
+                timerBox.classList.remove('pomodoro');
+                btn.classList.replace('btn-warning', 'btn-outline');
+                activeSeconds = 0; // Reset to 0
+            }
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            let m = String(Math.floor(Math.abs(activeSeconds) / 60)).padStart(2, '0');
+            let s = String(Math.abs(activeSeconds) % 60).padStart(2, '0');
+            document.getElementById('timer-display').innerText = `${m}:${s}`;
+        }
 
         function startTimer(taskId, title) {
-            if(activeTaskId) { alert('یک تایمر در حال اجراست!'); return; }
+            if(activeTaskId) { alert('یک کار در حال انجام است!'); return; }
             activeTaskId = taskId;
+            isPomodoro = false;
             activeSeconds = 0;
+            document.getElementById('floating-timer').classList.remove('pomodoro');
+            document.getElementById('pomodoro-toggle').classList.replace('btn-warning', 'btn-outline');
+            
             document.getElementById('active-task-title').innerText = title;
             document.getElementById('floating-timer').style.display = 'flex';
+            updateTimerDisplay();
             
+            // Move task to 'doing' column automatically
+            tasks = tasks.map(t => t.id === taskId ? {...t, status: 'doing'} : t);
+            saveData(); renderKanban();
+
             timerInterval = setInterval(() => {
-                activeSeconds++;
-                let m = String(Math.floor(activeSeconds / 60)).padStart(2, '0');
-                let s = String(activeSeconds % 60).padStart(2, '0');
-                document.getElementById('timer-display').innerText = `${m}:${s}`;
+                if (isPomodoro) {
+                    activeSeconds--;
+                    if (activeSeconds <= 0) {
+                        playBeep();
+                        clearInterval(timerInterval);
+                        alert("پومودورو تمام شد! خسته نباشی.");
+                        stopTimer(true); // Auto stop and log 25 mins
+                    }
+                } else {
+                    activeSeconds++;
+                }
+                updateTimerDisplay();
             }, 1000);
         }
 
-        function stopTimer() {
+        function stopTimer(isAutoPomodoro = false) {
             clearInterval(timerInterval);
-            const minsAdded = Math.round(activeSeconds / 60);
+            let minsAdded = 0;
             
-            if(minsAdded > 0) {
-                // Find task info
+            if (isAutoPomodoro) {
+                minsAdded = 25;
+            } else {
+                minsAdded = isPomodoro ? Math.round((pomodoroTarget - activeSeconds) / 60) : Math.round(activeSeconds / 60);
+            }
+
+            if(minsAdded > 0 && activeTaskId) {
                 const task = tasks.find(t => t.id === activeTaskId);
                 if(task) {
-                    // Log exact history
                     const now = new Date();
-                    const dateStr = now.toLocaleDateString('fa-IR') + ' - ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
-                    logs.push({ id: Date.now(), title: task.title, category: task.category, minutes: minsAdded, exactDate: dateStr, sysDate: now.toISOString().split('T')[0] });
+                    logs.push({ id: Date.now(), title: task.title, category: task.category, minutes: minsAdded, sysDate: now.toISOString().split('T')[0] });
                     
-                    // Update actual task
                     tasks = tasks.map(t => {
                         if(t.id === activeTaskId) {
                             let newMins = t.actualMins + minsAdded;
-                            return {...t, actualMins: newMins, completed: newMins >= t.targetMins ? true : t.completed};
+                            let newStatus = newMins >= t.targetMins ? 'done' : t.status;
+                            return {...t, actualMins: newMins, status: newStatus};
                         }
                         return t;
                     });
@@ -380,129 +455,104 @@
 
             activeTaskId = null;
             document.getElementById('floating-timer').style.display = 'none';
-            document.getElementById('timer-display').innerText = '00:00';
-            saveData(); renderPlanner();
+            saveData(); renderKanban();
         }
 
-        // --- Goals Logic ---
-        function addGoal() {
-            const title = document.getElementById('goal-title').value;
-            const type = document.getElementById('goal-type').value;
-            if(!title) return;
-            goals.push({ id: Date.now(), title, type, completed: false });
-            saveData(); document.getElementById('goal-title').value = ''; renderGoals();
+        // --- 6. REFLECTIONS & STATS ---
+        function saveReflection() {
+            const text = document.getElementById('r-text').value;
+            if(!text) return;
+            const date = new Date().toLocaleDateString('fa-IR');
+            reflections.push({ date, text });
+            saveData(); closeModal('modal-reflection');
+            document.getElementById('r-text').value = '';
         }
 
-        function renderGoals() {
-            ['short', 'medium', 'long'].forEach(type => {
-                const container = document.getElementById(`goals-${type}`);
-                container.innerHTML = '';
-                goals.filter(g => g.type === type).forEach(g => {
-                    container.innerHTML += `
-                        <div class="list-item ${g.completed ? 'completed' : ''}" style="padding: 10px;">
-                            <span class="item-title">${g.title}</span>
-                            <div>
-                                <button class="btn btn-sm ${g.completed ? 'btn-primary' : 'btn-success'}" onclick="toggleGoal(${g.id})">✔</button>
-                                <button class="btn btn-sm btn-danger" onclick="deleteGoal(${g.id})">✖</button>
-                            </div>
-                        </div>
-                    `;
-                });
+        let catChart = null, weekChart = null;
+        function renderStats() {
+            // Render Reflections
+            const refCont = document.getElementById('reflections-container');
+            refCont.innerHTML = '';
+            [...reflections].reverse().slice(0, 5).forEach(r => {
+                refCont.innerHTML += `<div style="background: var(--bg-body); padding: 10px; border-radius: 8px; border-right: 3px solid var(--secondary);">
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">${r.date}</div>
+                    <div>${r.text}</div></div>`;
             });
-        }
 
-        function toggleGoal(id) { goals = goals.map(g => g.id === id ? {...g, completed: !g.completed} : g); saveData(); renderGoals(); }
-        function deleteGoal(id) { goals = goals.filter(g => g.id !== id); saveData(); renderGoals(); }
-
-        // --- History Logic ---
-        function renderHistory() {
-            const tbody = document.getElementById('history-table-body');
-            tbody.innerHTML = '';
-            // Show latest first
-            [...logs].reverse().forEach(log => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="direction: ltr; text-align: right;">${log.exactDate}</td>
-                        <td>${log.title}</td>
-                        <td>${log.category}</td>
-                        <td><b style="color: var(--primary)">${log.minutes} دقیقه</b></td>
-                        <td><button class="btn btn-sm btn-danger" onclick="deleteLog(${log.id})">حذف</button></td>
-                    </tr>
-                `;
-            });
-        }
-        function deleteLog(id) { logs = logs.filter(l => l.id !== id); saveData(); renderHistory(); }
-
-        // --- Chart.js Logic ---
-        let catChartInstance = null;
-        let weekChartInstance = null;
-
-        function renderCharts() {
-            // Category Data Process
+            // Process Chart Data
             const catMap = {};
             logs.forEach(l => { catMap[l.category] = (catMap[l.category] || 0) + l.minutes; });
 
-            // Weekly Data Process (Last 7 days)
-            const weekDates = [];
-            const weekData = [];
+            const weekDates = []; const weekData = [];
             for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                const dateString = d.toISOString().split('T')[0];
-                weekDates.push(d.toLocaleDateString('fa-IR', { weekday: 'short' })); // e.g. شنبه
-                
-                const dailyTotal = logs.filter(l => l.sysDate === dateString).reduce((sum, l) => sum + l.minutes, 0);
-                weekData.push(dailyTotal);
+                const d = new Date(); d.setDate(d.getDate() - i);
+                weekDates.push(d.toLocaleDateString('fa-IR', { weekday: 'short' }));
+                weekData.push(logs.filter(l => l.sysDate === d.toISOString().split('T')[0]).reduce((sum, l) => sum + l.minutes, 0));
             }
 
-            // Draw Category Doughnut
-            if(catChartInstance) catChartInstance.destroy();
-            catChartInstance = new Chart(document.getElementById('categoryChart').getContext('2d'), {
+            if(catChart) catChart.destroy();
+            catChart = new Chart(document.getElementById('categoryChart'), {
                 type: 'doughnut',
-                data: {
-                    labels: Object.keys(catMap).length ? Object.keys(catMap) : ['بدون داده'],
-                    datasets: [{
-                        data: Object.values(catMap).length ? Object.values(catMap) : [1],
-                        backgroundColor: ['#38bdf8', '#818cf8', '#10b981', '#f43f5e', '#f59e0b'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#f8fafc' } } } }
+                data: { labels: Object.keys(catMap).length?Object.keys(catMap):['بدون داده'], datasets: [{ data: Object.values(catMap).length?Object.values(catMap):[1], backgroundColor: ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#f43f5e'], borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels:{color:'#f8fafc'} } } }
             });
 
-            // Draw Weekly Bar
-            if(weekChartInstance) weekChartInstance.destroy();
-            weekChartInstance = new Chart(document.getElementById('weeklyChart').getContext('2d'), {
+            if(weekChart) weekChart.destroy();
+            weekChart = new Chart(document.getElementById('weeklyChart'), {
                 type: 'bar',
-                data: {
-                    labels: weekDates,
-                    datasets: [{
-                        label: 'زمان مفید (دقیقه)',
-                        data: weekData,
-                        backgroundColor: '#38bdf8',
-                        borderRadius: 6
-                    }]
-                },
-                options: { 
-                    responsive: true, maintainAspectRatio: false, 
-                    scales: { 
-                        y: { beginAtZero: true, grid: { color: '#334155' }, ticks: { color: '#94a3b8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                    },
-                    plugins: { legend: { display: false } }
-                }
+                data: { labels: weekDates, datasets: [{ label: 'دقیقه مطالعه/کار', data: weekData, backgroundColor: '#8b5cf6', borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { grid:{color:'#334155'}, ticks:{color:'#94a3b8'} }, x: { grid:{display:false}, ticks:{color:'#94a3b8'} } }, plugins: { legend: { display: false } } }
             });
         }
 
-        // --- Utility ---
+        // --- 7. BACKUP / EXPORT / IMPORT ---
         function saveData() {
-            localStorage.setItem('mega_tasks', JSON.stringify(tasks));
-            localStorage.setItem('mega_goals', JSON.stringify(goals));
-            localStorage.setItem('mega_logs', JSON.stringify(logs));
+            localStorage.setItem('pro_tasks', JSON.stringify(tasks));
+            localStorage.setItem('pro_logs', JSON.stringify(logs));
+            localStorage.setItem('pro_reflections', JSON.stringify(reflections));
         }
 
-        // Initialize first view
-        renderPlanner();
+        function exportData() {
+            const dataObj = { tasks, logs, reflections };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataObj));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "planner_backup_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if(imported.tasks) tasks = imported.tasks;
+                    if(imported.logs) logs = imported.logs;
+                    if(imported.reflections) reflections = imported.reflections;
+                    saveData();
+                    alert("اطلاعات با موفقیت بازگردانی شد!");
+                    renderKanban();
+                } catch (err) {
+                    alert("خطا در خواندن فایل! لطفاً فایل صحیح JSON را انتخاب کنید.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearAllData() {
+            if(confirm("آیا از پاک کردن کل اطلاعات مطمئن هستید؟ این کار غیرقابل بازگشت است!")) {
+                localStorage.clear();
+                tasks = []; logs = []; reflections = [];
+                renderKanban();
+            }
+        }
+
+        // Init
+        renderKanban();
     </script>
 </body>
 </html>
